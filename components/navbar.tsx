@@ -1,117 +1,92 @@
-import React, { useState } from 'react';
+// components/navbar.js
+import { useState } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { Menu, X, User, ChevronDown } from 'lucide-react';
 
-const Navbar = () => {
+export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const toggleMobileMenu = () => {
-    setMobileMenuOpen(!mobileMenuOpen);
-  };
-
   return (
-    <motion.nav 
-      initial={{ y: -50, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.5 }}
-      className="bg-white shadow-md"
-    >
+    <nav className="bg-white shadow-sm">
       <div className="container mx-auto px-4">
-        <div className="flex justify-between items-center h-16">
-          <Link href="/" className="flex items-center">
-            <span className="text-xl font-bold text-green-700">IVAA</span>
+        <div className="flex justify-between items-center py-4">
+          {/* Logo */}
+          <Link href="/" className="text-2xl font-bold text-green-800">
+            IVAA
           </Link>
-          
-          <div className="hidden md:flex space-x-6">
-            <Link href="/" className="text-gray-700 hover:text-green-600 transition-colors">
-              Home
-            </Link>
-            <Link href="/commodity" className="text-gray-700 hover:text-green-600 transition-colors">
+
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center space-x-8">
+            <Link href="/trends" className="text-gray-700 hover:text-green-600 transition-colors">
               Market Trends
             </Link>
             <Link href="/farmer-assist" className="text-gray-700 hover:text-green-600 transition-colors">
-              Farmer Assistance
+              Farming Assistant
             </Link>
-            <Link href="#" className="text-gray-700 hover:text-green-600 transition-colors">
-              About
+            <Link href="/weather" className="text-gray-700 hover:text-green-600 transition-colors">
+              Weather
             </Link>
-          </div>
-          
-          <div className="hidden md:block">
-            <Link href="/farmer-assist" className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md transition-colors">
-              Get Recommendations
+            <Link href="/ai-chat" className="text-gray-700 hover:text-green-600 transition-colors">
+              AI Chat
             </Link>
-          </div>
-          
-          {/* Mobile menu button */}
-          <div className="md:hidden">
-            <button 
-              onClick={toggleMobileMenu} 
-              className="text-gray-500 hover:text-green-600 focus:outline-none"
-            >
-              <svg className="h-6 w-6" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor">
-                {mobileMenuOpen ? (
-                  <path d="M6 18L18 6M6 6l12 12" />
-                ) : (
-                  <path d="M4 6h16M4 12h16M4 18h16" />
-                )}
-              </svg>
-            </button>
-          </div>
-        </div>
-      </div>
-      
-      {/* Mobile Menu */}
-      {mobileMenuOpen && (
-        <motion.div 
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: 'auto' }}
-          exit={{ opacity: 0, height: 0 }}
-          className="md:hidden bg-white border-t border-gray-200"
-        >
-          <div className="container mx-auto px-4 py-3 space-y-3">
-            <Link 
-              href="/" 
-              className="block py-2 px-4 text-gray-700 hover:bg-green-50 hover:text-green-600 rounded-md"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Home
-            </Link>
-            <Link 
-              href="/commodity" 
-              className="block py-2 px-4 text-gray-700 hover:bg-green-50 hover:text-green-600 rounded-md"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Market Trends
-            </Link>
-            <Link 
-              href="/farmer-assist" 
-              className="block py-2 px-4 text-gray-700 hover:bg-green-50 hover:text-green-600 rounded-md"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Farmer Assistance
-            </Link>
-            <Link 
-              href="#" 
-              className="block py-2 px-4 text-gray-700 hover:bg-green-50 hover:text-green-600 rounded-md"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              About
-            </Link>
-            <div className="pt-2">
-              <Link 
-                href="/farmer-assist" 
-                className="block w-full text-center bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md transition-colors"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Get Recommendations
-              </Link>
+            
+            {/* User Menu */}
+            <div className="relative group">
+              <button className="flex items-center text-gray-700 hover:text-green-600 transition-colors">
+                <User className="w-5 h-5 mr-1" />
+                <span>Account</span>
+                <ChevronDown className="w-4 h-4 ml-1" />
+              </button>
+              <div className="absolute right-0 w-48 mt-2 py-2 bg-white rounded-md shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
+                <Link href="/profile" className="block px-4 py-2 text-gray-700 hover:bg-green-50 hover:text-green-600">
+                  Profile
+                </Link>
+                <Link href="/settings" className="block px-4 py-2 text-gray-700 hover:bg-green-50 hover:text-green-600">
+                  Settings
+                </Link>
+                <Link href="/logout" className="block px-4 py-2 text-gray-700 hover:bg-green-50 hover:text-green-600">
+                  Logout
+                </Link>
+              </div>
             </div>
           </div>
-        </motion.div>
-      )}
-    </motion.nav>
-  );
-};
 
-export default Navbar;
+          {/* Mobile menu button */}
+          <button 
+            className="md:hidden text-gray-500 hover:text-green-600 focus:outline-none" 
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile Navigation */}
+      <div className={`md:hidden ${mobileMenuOpen ? 'block' : 'hidden'}`}>
+        <div className="px-2 pt-2 pb-4 space-y-1 bg-white">
+          <Link href="/trends" className="block px-3 py-2 rounded-md text-gray-700 hover:bg-green-50 hover:text-green-600">
+            Market Trends
+          </Link>
+          <Link href="/farmer-assist" className="block px-3 py-2 rounded-md text-gray-700 hover:bg-green-50 hover:text-green-600">
+            Farming Assistant
+          </Link>
+          <Link href="/weather" className="block px-3 py-2 rounded-md text-gray-700 hover:bg-green-50 hover:text-green-600">
+            Weather
+          </Link>
+          <Link href="/chat" className="block px-3 py-2 rounded-md text-gray-700 hover:bg-green-50 hover:text-green-600">
+            AI Chat
+          </Link>
+          <Link href="/profile" className="block px-3 py-2 rounded-md text-gray-700 hover:bg-green-50 hover:text-green-600">
+            Profile
+          </Link>
+          <Link href="/settings" className="block px-3 py-2 rounded-md text-gray-700 hover:bg-green-50 hover:text-green-600">
+            Settings
+          </Link>
+          <Link href="/logout" className="block px-3 py-2 rounded-md text-gray-700 hover:bg-green-50 hover:text-green-600">
+            Logout
+          </Link>
+        </div>
+      </div>
+    </nav>
+  );
+}
