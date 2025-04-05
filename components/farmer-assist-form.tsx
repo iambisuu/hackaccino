@@ -12,6 +12,7 @@ import { generateFarmerAssistance } from '@/lib/farmer-assist-data';
 import { getAIRecommendations } from '@/lib/openai-service';
 import FarmerFormSteps from './farmer-forms-steps';
 import FarmerResultsView from './farmer-results-view';
+import Link from 'next/link';
 
 // Default farmer profile
 const defaultFarmerProfile: FarmerProfile = {
@@ -156,18 +157,23 @@ const FarmerAssistForm = () => {
     setError(null);
     
     try {
-      // Store API key temporarily in environment variable
+      // Store API key in localStorage for temporary usage
       if (apiKey) {
         window.localStorage.setItem('openai_api_key', apiKey);
-        // In a real application, you would use a more secure method to pass this key
-        process.env.NEXT_PUBLIC_OPENAI_API_KEY = apiKey;
+        // We'll use this key directly in the getAIRecommendations function
       }
       
       let recommendations: FarmerAssistance | null = null;
       
       // Try to get AI recommendations if API key is provided
       if (apiKey) {
-        recommendations = await getAIRecommendations(farmerProfile, soilData);
+        try {
+          recommendations = await getAIRecommendations(farmerProfile, soilData, apiKey);
+        } catch (aiError) {
+          console.error('Error with OpenAI API:', aiError);
+          setError(`AI recommendation failed: ${ 'Unknown error'}. Falling back to local recommendations.`);
+          // Continue to fallback
+        }
       }
       
       // Fall back to local generation if AI failed or no API key provided
@@ -188,6 +194,8 @@ const FarmerAssistForm = () => {
       }
       
       setAssistance(recommendations);
+      // Clear any previous error if we successfully got recommendations
+      setError(null);
     } catch (error) {
       console.error('Error generating recommendations:', error);
       setError('Failed to generate recommendations. Please try again or check your API key.');
@@ -373,13 +381,18 @@ const FarmerAssistForm = () => {
             {currentStep === 'review' ? 'Generate Recommendations' : 'Next'}
           </button>
         ) : (
+          <div className=''>
           <button
             onClick={resetForm}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            className="px-4 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
             disabled={isLoading}
           >
             Start New Assessment
           </button>
+          <Link href='/ai-chat' className="ml-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+            Know More with AI
+          </Link>
+          </div>
         )}
       </div>
     </div>

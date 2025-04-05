@@ -1,23 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
 import { FarmerAssistance, FarmerProfile, WeatherPrediction, DiseasePrediction } from '@/lib/farmer-assist-types';
-import { 
-  AreaChart, 
-  Area, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer,
-  LineChart,
-  Line,
-  BarChart,
-  Bar,
-  Cell,
-  PieChart,
-  Pie,
-  Legend
-} from 'recharts';
 
 interface FarmerResultsViewProps {
   assistance: FarmerAssistance | null;
@@ -197,7 +179,7 @@ const MarketWidget = ({
         <div className="p-2 bg-white rounded-md">
           <p className="text-xs text-gray-600">Projected Price</p>
           <p className={`text-lg font-bold ${recommendation.projectedPrice > recommendation.currentLocalPrice ? 'text-green-700' : 'text-red-700'}`}>
-            ₹{recommendation.projectedPrice}
+            ₹{Math.round(recommendation.projectedPrice)}
           </p>
         </div>
       </div>
@@ -228,6 +210,127 @@ const FarmerResultsView: React.FC<FarmerResultsViewProps> = ({ assistance, farme
     );
   }
   
+  // For the legacy format, we need to check if the expected data structure exists
+  // If not available, display a simpler view with the data we have
+  if (!assistance.weatherPredictions || !assistance.irrigationRecommendation) {
+    return (
+      <div className="space-y-8">
+        <div className="text-center">
+          <h2 className="text-2xl font-semibold text-green-700">Crop Recommendations</h2>
+          <p className="text-gray-600 mt-2">
+            Based on your inputs, we've generated the following insights for {farmerProfile.crops[0].cropName}
+          </p>
+        </div>
+        
+        {/* Display the basic crop prediction */}
+        {assistance.cropPrediction && (
+          <div className="bg-white rounded-lg shadow-lg p-4">
+            <h3 className="text-xl font-semibold text-gray-800 mb-3">Crop Prediction</h3>
+            <div className="bg-gray-50 p-3 rounded-md">
+              <p><span className="font-semibold">Expected Yield:</span> {assistance.cropPrediction.expectedYield}</p>
+              <p><span className="font-semibold">Harvest Date:</span> {assistance.cropPrediction.harvestDate}</p>
+              
+              {assistance.cropPrediction.potentialIssues && assistance.cropPrediction.potentialIssues.length > 0 && (
+                <div className="mt-3">
+                  <p className="font-semibold">Potential Issues:</p>
+                  <ul className="list-disc pl-5 mt-1">
+                    {assistance.cropPrediction.potentialIssues.map((issue, index) => (
+                      <li key={index}>{issue}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+        
+        {/* Display recommendations */}
+        {assistance.recommendations && (
+          <div className="bg-white rounded-lg shadow-lg p-4">
+            <h3 className="text-xl font-semibold text-gray-800 mb-3">Recommendations</h3>
+            
+            {/* Fertilizer */}
+            <div className="bg-gray-50 p-3 rounded-md mb-3">
+              <h4 className="text-lg font-medium text-gray-700 mb-2">Fertilizer</h4>
+              <p><span className="font-semibold">Type:</span> {assistance.recommendations.fertilizer.type}</p>
+              <p><span className="font-semibold">Schedule:</span> {assistance.recommendations.fertilizer.schedule}</p>
+              <p><span className="font-semibold">Quantity:</span> {assistance.recommendations.fertilizer.quantity}</p>
+            </div>
+            
+            {/* Irrigation */}
+            <div className="bg-gray-50 p-3 rounded-md mb-3">
+              <h4 className="text-lg font-medium text-gray-700 mb-2">Irrigation</h4>
+              <p><span className="font-semibold">Method:</span> {assistance.recommendations.irrigation.method}</p>
+              <p><span className="font-semibold">Schedule:</span> {assistance.recommendations.irrigation.schedule}</p>
+              <p><span className="font-semibold">Quantity:</span> {assistance.recommendations.irrigation.quantity}</p>
+            </div>
+            
+            {/* Pest Management */}
+            <div className="bg-gray-50 p-3 rounded-md">
+              <h4 className="text-lg font-medium text-gray-700 mb-2">Pest Management</h4>
+              
+              {assistance.recommendations.pestManagement.commonPests && assistance.recommendations.pestManagement.commonPests.length > 0 && (
+                <div className="mb-2">
+                  <p className="font-semibold">Common Pests:</p>
+                  <ul className="list-disc pl-5 mt-1">
+                    {assistance.recommendations.pestManagement.commonPests.map((pest, index) => (
+                      <li key={index}>{pest}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              
+              {assistance.recommendations.pestManagement.preventiveMeasures && assistance.recommendations.pestManagement.preventiveMeasures.length > 0 && (
+                <div className="mb-2">
+                  <p className="font-semibold">Preventive Measures:</p>
+                  <ul className="list-disc pl-5 mt-1">
+                    {assistance.recommendations.pestManagement.preventiveMeasures.map((measure, index) => (
+                      <li key={index}>{measure}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              
+              {assistance.recommendations.pestManagement.solutions && assistance.recommendations.pestManagement.solutions.length > 0 && (
+                <div>
+                  <p className="font-semibold">Solutions:</p>
+                  <ul className="list-disc pl-5 mt-1">
+                    {assistance.recommendations.pestManagement.solutions.map((solution, index) => (
+                      <li key={index}>{solution}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+        
+        {/* Market Insights */}
+        {assistance.marketInsights && (
+          <div className="bg-white rounded-lg shadow-lg p-4">
+            <h3 className="text-xl font-semibold text-gray-800 mb-3">Market Insights</h3>
+            <div className="bg-gray-50 p-3 rounded-md">
+              <p><span className="font-semibold">Current Price:</span> {assistance.marketInsights.currentPrice}</p>
+              <p><span className="font-semibold">Price Trend:</span> {assistance.marketInsights.priceTrend}</p>
+              
+              {assistance.marketInsights.bestMarkets && assistance.marketInsights.bestMarkets.length > 0 && (
+                <div className="mt-3">
+                  <p className="font-semibold">Best Markets:</p>
+                  <ul className="list-disc pl-5 mt-1">
+                    {assistance.marketInsights.bestMarkets.map((market, index) => (
+                      <li key={index}>{market}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+  
+  // Use the full UI with all the components if the complete data structure is available
   return (
     <div className="space-y-8">
       <div className="text-center">
