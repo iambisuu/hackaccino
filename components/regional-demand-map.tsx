@@ -6,7 +6,8 @@ import {
   ResponsiveContainer,
   Tooltip,
   Legend,
-  Sector
+  Sector,
+  TooltipProps
 } from 'recharts';
 
 // Type for regional data
@@ -19,6 +20,40 @@ type RegionalData = {
 
 interface RegionalDemandMapProps {
   regionalData: RegionalData[];
+}
+
+// Define proper types for Recharts components
+type CustomTooltipProps = TooltipProps<number, string> & {
+  payload?: Array<{
+    payload: RegionalData;
+    value: number;
+    name: string;
+    dataKey: string;
+    fill: string;
+  }>;
+};
+
+// Type for active shape props
+interface ActiveShapeProps {
+  cx: number;
+  cy: number;
+  innerRadius: number;
+  outerRadius: number;
+  startAngle: number;
+  endAngle: number;
+  fill: string;
+  payload: RegionalData;
+  percent: number;
+  value: number;
+}
+
+// Type for custom legend props
+interface CustomLegendProps {
+  payload?: Array<{
+    value: string;
+    color: string;
+    type?: string;
+  }>;
 }
 
 // Beautiful color palette for the pie chart
@@ -39,7 +74,7 @@ const RegionalDemandMap = ({ regionalData }: RegionalDemandMapProps) => {
   const sortedData = [...regionalData].sort((a, b) => b.demand - a.demand);
   
   // Custom tooltip to show more details
-  const CustomTooltip = ({ active, payload }: any) => {
+  const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (
@@ -66,12 +101,12 @@ const RegionalDemandMap = ({ regionalData }: RegionalDemandMapProps) => {
   };
   
   // Active shape when hovering over a pie sector
-  const renderActiveShape = (props: any) => {
+  const renderActiveShape = (props: unknown): React.JSX.Element => {
     const { 
       cx, cy, innerRadius, outerRadius, startAngle, endAngle,
       fill, payload, percent, value
-    } = props;
-    
+    } = props as ActiveShapeProps; // Type assertion here
+
     return (
       <g>
         <text x={cx} y={cy - 15} dy={8} textAnchor="middle" fill="#333" fontSize={16} fontWeight={500}>
@@ -105,7 +140,7 @@ const RegionalDemandMap = ({ regionalData }: RegionalDemandMapProps) => {
   };
   
   // Handlers for mouse events
-  const onPieEnter = (_: any, index: number) => {
+  const onPieEnter = (_: unknown, index: number) => {
     setActiveIndex(index);
   };
   
@@ -114,10 +149,12 @@ const RegionalDemandMap = ({ regionalData }: RegionalDemandMapProps) => {
   };
   
   // Custom legend to make it more attractive
-  const CustomLegend = ({ payload }: any) => {
+  const CustomLegend = ({ payload }: CustomLegendProps) => {
+    if (!payload) return null;
+    
     return (
       <ul className="flex flex-wrap justify-center gap-x-6 gap-y-1 text-sm mb-2">
-        {payload.map((entry: any, index: number) => (
+        {payload.map((entry, index) => (
           <li key={`legend-${index}`} className="flex items-center">
             <div 
               className="w-3 h-3 rounded-full mr-1" 

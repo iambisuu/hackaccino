@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { Commodity } from '@/lib/types';
+import Image from 'next/image';
 
 interface CommodityCardProps {
   commodity: Commodity;
@@ -22,7 +23,9 @@ const CommodityCard: React.FC<CommodityCardProps> = ({ commodity, index }) => {
     >
       <Link href={`/commodity/${commodity.id}`} className="block h-full">
         <div className="relative h-48 bg-gray-200">
-          <img 
+          <Image
+          width={500}
+            height={500}
             src={commodity.image} 
             alt={commodity.name}
             className="w-full h-full object-cover"

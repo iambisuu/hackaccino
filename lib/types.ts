@@ -1,18 +1,4 @@
-// lib/types.ts
-export interface Commodity {
-    id: string;
-    name: string;
-    category: string;
-    image: string;
-    currentPrice: number;
-    priceUnit: string;
-    priceChange: number;
-    demandScore: number;
-    season: string[];
-    regions: Region[];
-  }
-  
-  export interface Region {
+export interface Region {
     name: string;
     demandScore: number;
     production: number;
@@ -27,6 +13,20 @@ export interface Commodity {
   export interface WeatherImpact {
     condition: string;
     impact: number;
+  }
+  
+  export interface Commodity {
+    id: string;
+    name: string;
+    category: string;
+    image: string;
+    currentPrice: number;
+    priceUnit: string;
+    priceChange: number;
+    demandScore: number;
+    season: string[];
+    regions: Region[];
+    msp?: number; // Minimum Support Price
   }
   
   export interface CommodityDetail extends Commodity {
@@ -49,4 +49,9 @@ export interface Commodity {
       price: number;
       change: number;
     }[];
+    msp: number; // Required in detail view
+    mspHistory?: {
+      year: string;
+      price: number;
+    }[]; // MSP history data
   }

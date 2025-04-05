@@ -1,6 +1,4 @@
-
-// lib/dummy-data.ts
-import { Commodity, CommodityDetail, PriceHistory } from './types';
+import { Commodity, CommodityDetail, PriceHistory} from './types';
 
 export const commodities: Commodity[] = [
   {
@@ -17,7 +15,8 @@ export const commodities: Commodity[] = [
       { name: "Uttar Pradesh", demandScore: 88, production: 14500, consumption: 12000 },
       { name: "West Bengal", demandScore: 82, production: 11000, consumption: 9500 },
       { name: "Bihar", demandScore: 79, production: 8200, consumption: 7000 }
-    ]
+    ],
+    msp: 20.0
   },
   {
     id: "tomato",
@@ -33,7 +32,8 @@ export const commodities: Commodity[] = [
       { name: "Maharashtra", demandScore: 95, production: 13200, consumption: 12800 },
       { name: "Karnataka", demandScore: 90, production: 9800, consumption: 8500 },
       { name: "Andhra Pradesh", demandScore: 87, production: 8700, consumption: 7200 }
-    ]
+    ],
+    msp: 32.50
   },
   {
     id: "rice",
@@ -49,7 +49,8 @@ export const commodities: Commodity[] = [
       { name: "Punjab", demandScore: 98, production: 22500, consumption: 18000 },
       { name: "Haryana", demandScore: 95, production: 18000, consumption: 14500 },
       { name: "Tamil Nadu", demandScore: 92, production: 15500, consumption: 14000 }
-    ]
+    ],
+    msp: 39.50
   },
   {
     id: "onion",
@@ -65,7 +66,8 @@ export const commodities: Commodity[] = [
       { name: "Maharashtra", demandScore: 90, production: 16500, consumption: 15000 },
       { name: "Karnataka", demandScore: 86, production: 12200, consumption: 10500 },
       { name: "Gujarat", demandScore: 85, production: 11000, consumption: 9500 }
-    ]
+    ],
+    msp: 26.40
   },
   {
     id: "wheat",
@@ -81,7 +83,8 @@ export const commodities: Commodity[] = [
       { name: "Uttar Pradesh", demandScore: 95, production: 28500, consumption: 24000 },
       { name: "Punjab", demandScore: 92, production: 22000, consumption: 18500 },
       { name: "Haryana", demandScore: 90, production: 18500, consumption: 15000 }
-    ]
+    ],
+    msp: 29.75
   },
   {
     id: "apple",
@@ -97,7 +100,42 @@ export const commodities: Commodity[] = [
       { name: "Himachal Pradesh", demandScore: 92, production: 8500, consumption: 2200 },
       { name: "Jammu & Kashmir", demandScore: 90, production: 7800, consumption: 1800 },
       { name: "Uttarakhand", demandScore: 78, production: 3200, consumption: 1500 }
-    ]
+    ],
+    msp: 110.0
+  },
+  {
+    id: "sugarcane",
+    name: "Sugarcane",
+    category: "Cash Crops",
+    image: "/images/commodities/sugarcane.jpg",
+    currentPrice: 3.5,
+    priceUnit: "₹/kg",
+    priceChange: 0.8,
+    demandScore: 89,
+    season: ["Spring", "Summer"],
+    regions: [
+      { name: "Uttar Pradesh", demandScore: 94, production: 135000, consumption: 120000 },
+      { name: "Maharashtra", demandScore: 91, production: 95000, consumption: 88000 },
+      { name: "Karnataka", demandScore: 87, production: 45000, consumption: 40000 }
+    ],
+    msp: 3.25
+  },
+  {
+    id: "cotton",
+    name: "Cotton",
+    category: "Cash Crops",
+    image: "/images/commodities/cotton.jpg",
+    currentPrice: 65.75,
+    priceUnit: "₹/kg",
+    priceChange: 3.8,
+    demandScore: 86,
+    season: ["Monsoon", "Autumn"],
+    regions: [
+      { name: "Gujarat", demandScore: 95, production: 9500, consumption: 8800 },
+      { name: "Maharashtra", demandScore: 88, production: 7200, consumption: 6500 },
+      { name: "Telangana", demandScore: 85, production: 5800, consumption: 5200 }
+    ],
+    msp: 61.20
   }
 ];
 
@@ -181,6 +219,27 @@ export const getCommodityDetail = (id: string): CommodityDetail | undefined => {
     }));
   };
 
+  // Generate MSP history for the past 5 years
+  const generateMspHistory = () => {
+    const history = [];
+    const currentYear = new Date().getFullYear();
+    const baseMsp = commodity.msp || 0;
+    
+    // Generate 5 years of MSP history
+    for (let i = 0; i < 5; i++) {
+      const year = (currentYear - 4 + i).toString();
+      // MSP generally increases over time
+      const price = baseMsp * (0.85 + i * 0.04);
+      
+      history.push({
+        year,
+        price: Math.round(price * 100) / 100
+      });
+    }
+    
+    return history;
+  };
+
   return {
     ...commodity,
     description: `${commodity.name} is a widely consumed ${commodity.category.toLowerCase()} in India. It is primarily grown in ${commodity.regions.map(r => r.name).join(', ')}. Peak season is during ${commodity.season.join(' and ')}.`,
@@ -188,6 +247,8 @@ export const getCommodityDetail = (id: string): CommodityDetail | undefined => {
     forecastedDemand: generateForecastedDemand(),
     weatherImpact: generateWeatherImpact(),
     regionalData: generateRegionalData(),
-    mandiPrices: generateMandiPrices()
+    mandiPrices: generateMandiPrices(),
+    msp: commodity.msp || 0,
+    mspHistory: generateMspHistory()
   };
 };

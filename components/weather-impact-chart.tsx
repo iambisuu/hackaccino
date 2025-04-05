@@ -1,3 +1,4 @@
+// components/weather-impact-chart.tsx
 import React from 'react';
 import { 
   BarChart, 
@@ -12,6 +13,8 @@ import {
   Cell,
   LabelList
 } from 'recharts';
+import type { TooltipProps } from 'recharts';
+import type { ValueType, NameType } from 'recharts/types/component/DefaultTooltipContent';
 
 // Type for weather impact
 type WeatherImpact = {
@@ -37,9 +40,12 @@ const WeatherImpactChart = ({ weatherData }: WeatherImpactChartProps) => {
   };
   
   // Custom tooltip to display impact values with better formatting
-  const CustomTooltip = ({ active, payload, label }: any) => {
+  const CustomTooltip = ({
+    active,
+    payload,
+  }: TooltipProps<ValueType, NameType>) => {
     if (active && payload && payload.length) {
-      const data = payload[0].payload;
+      const data = payload[0].payload as WeatherImpact;
       return (
         <div className="bg-white p-3 border border-gray-200 rounded shadow-md">
           <p className="font-semibold">{data.condition}</p>
@@ -83,7 +89,7 @@ const WeatherImpactChart = ({ weatherData }: WeatherImpactChartProps) => {
               <Cell 
                 key={`cell-${index}`} 
                 fill={getBarColor(entry.impact)} 
-                radius={4} // Use a single value for rounded corners
+                radius={4}
               />
             ))}
             <LabelList 
